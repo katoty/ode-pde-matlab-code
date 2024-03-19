@@ -24,7 +24,7 @@ end
 
 results=[t',u'];
 
-% % 将结果保存为 Excel 文件
-% filename = 'C:\Users\lty\Desktop\task2_euler.xlsx';
-% xlswrite(filename, results);
-% disp(['Results saved to ' filename]);
+% 将结果保存为 Excel 文件
+filename = 'xxx'; %xxx写保存路径
+xlswrite(filename, results);
+disp(['Results saved to ' filename]);

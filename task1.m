@@ -65,9 +65,6 @@ title('改进的 Euler 方法求解常微分方程 y'' = -5y');
 % 创建结果矩阵
 results = [x', y'];
 
-% % 将结果保存为 Excel 文件
-% filename = 'C:\Users\lty\Desktop\task1_改进euler.xlsx';
-% xlswrite(filename, results);
-% disp(['Results saved to ' filename]);
+
 
 
