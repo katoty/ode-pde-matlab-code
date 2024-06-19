@@ -1,0 +1,50 @@
+f = @(x,y) 2*pi^2*exp(pi*(x+y))*(sin(pi*x)*cos(pi*y)+cos(pi*x)*sin(pi*y));
+len = 1;
+
+% 网格步长
+h1 = 1/16;
+h2 = 1/32;
+h3 = 1/64;
+
+% 使用 h1 进行计算
+h = h1;
+[x, y] = deal(0:h:len);
+[X, Y] = meshgrid(x, y);
+
+N = len/h;
+F = f(X, Y);
+U = zeros(N+1);
+
+% 迭代求解
+max_iter = 10000; % 最大迭代次数
+tol = 1e-6; % 容忍误差
+
+for iter = 1:max_iter
+    U_old = U;
+    % 更新 U
+    for i = 2:N
+        for j = 2:N
+            U(i,j) = w*(U(i+1,j) + U(i-1,j) + U(i,j+1) + U(i,j-1) + h^2 * F(i,j)) / 4 + (1-w)*U(i,j);
+        end
+    end
+    % 计算误差
+    error = max(max(abs(U - U_old)));
+    if error < tol
+        fprintf('迭代在 %d 次后收敛\n', iter);
+        break;
+    end
+end
+
+if iter == max_iter
+    fprintf('最大迭代次数内未收敛\n');
+end
+
+% 可视化结果
+figure;
+surf(X, Y, U);
+title('Poisson 方程的数值解 (Gauss-Seidel 方法)');
+xlabel('x');
+ylabel('y');
+zlabel('U');
+
+
