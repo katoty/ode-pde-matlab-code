@@ -1,4 +1,5 @@
 clear;clc;close all;
+
 % 网格步长
 H = [1/16,1/32,1/64];
 for t =1:3
@@ -52,6 +53,7 @@ for t =1:3
             end
         end
     end
+
     % 因高斯赛德尔计算较慢，调试时用\计算。
     % u_vector = gauss_seidel(A,h^2*b,1e-4,1000);
     u_vector = A \ (h^2 * b);
@@ -72,37 +74,41 @@ for t =1:3
             U_exact(i,j) = u_exact(x(i), y(j));
         end
     end
-    % 输出指定位置的数值解，解析解。
+
+    % 输出指定位置的数值解，解析解。设(x，y)位于矩阵（i,j)处，则
+    % i = x/h +1 （+1因为第一列为0）。纵坐标同理
     fprintf("h= %s 时: \n",rats(h));
-    fprintf("(1/4,1/4)数值解 %f \n",u(1/(4*h)+1,1/(4*h)+1));
-    fprintf("(1/4,1/4)解析解 %f \n",U_exact(1/(4*h)+1,1/(4*h)+1));
-    fprintf("(1/2,1/2)数值解 %f \n",u(1/(2*h)+1,1/(2*h)+1));
-    fprintf("(1/2,1/2)解析解 %f \n",U_exact(1/(2*h)+1,1/(2*h)+1));
-    fprintf("(3/4,3/4)数值解 %f \n",u(3/(4*h)+1,3/(4*h)+1));
-    fprintf("(3/4,3/4)解析解 %f \n",U_exact(3/(4*h)+1,3/(4*h)+1));
+    fprintf("(1/4,1/4)数值解：%f",u(1/(4*h)+1,1/(4*h)+1));
+    fprintf(" 解析解： %f \n",U_exact(1/(4*h)+1,1/(4*h)+1));
+    fprintf("(1/2,1/2)数值解：%f",u(1/(2*h)+1,1/(2*h)+1));
+    fprintf(" 解析解： %f \n",U_exact(1/(2*h)+1,1/(2*h)+1));
+    fprintf("(3/4,3/4)数值解：%f",u(3/(4*h)+1,3/(4*h)+1));
+    fprintf(" 解析解： %f \n",U_exact(3/(4*h)+1,3/(4*h)+1));
+
+    % 绘制数值解图,h=1/32
+    if h==1/32
+    
+        figure;
+
+        % y =1/4
+        plot(x,u(:,9));
+        hold on;
+
+        % y =1/2
+        plot(x,u(:,17));
+
+        % y =3/4
+        plot(x,u(:,25));
+
+        legend('y=1/4','y=1/2','y=3/4');
+        xlabel('x');
+        ylabel('z');
+        title("h=1/32时的差分解曲线");
+    end
 
 end
 
-% 绘制数值解图,h=1/32
-figure;
-
-% y =1/4 为第9列 = y/h +1(因为第1列为0,下面同理。)
-plot(x,u(:,9));
-hold on;
-
-% y =1/2 
-plot(x,u(:,17));
-
-% y =3/4
-plot(x,u(:,25));
-
-legend('y=1/4','y=1/2','y=3/4');
-xlabel('x');
-ylabel('z');
-title("差分解曲线");
-
-
-
+%% 比较数值解 精确解
 [X, Y] = meshgrid(x, y);
 figure;
 surf(X, Y, u);
