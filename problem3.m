@@ -9,8 +9,8 @@ for t =1:3
     N = 1/h + 1;
 
     % 初始化参数
-    x = linspace(0, 1, N);  % x方向的坐标
-    y = linspace(0, 1, N);  % y方向的坐标
+    x = linspace(0, 1, N); 
+    y = linspace(0, 1, N);  
 
     % 右端项的函数定义
     f = @(x,y) 2*pi^2*exp(pi*(x+y))*(sin(pi*x)*cos(pi*y)+cos(pi*x)*sin(pi*y));
@@ -53,9 +53,10 @@ for t =1:3
             end
         end
     end
+    g_s = @(A, b, tol, max_iter)  gauss_seidel(A, b, tol, max_iter);
 
-    % 因高斯赛德尔计算较慢，调试时用\计算。
-    % u_vector = gauss_seidel(A,h^2*b,1e-4,1000);
+    % 高斯赛德尔计算较慢，调试时用\计算。
+    %u_vector = g_s(A,h^2*b,1e-4,1000);
     u_vector = A \ (h^2 * b);
 
     % 将解向量转换回网格
@@ -124,6 +125,53 @@ xlabel('x');
 ylabel('y');
 zlabel('u\_exact');
 
+function [x, iter, error] = gauss_seidel(A, b, tol, max_iter)
+    % 高斯赛德尔迭代法
+    % A: 系数矩阵
+    % b: 常数项向量
+    % tol: 误差容限
+    % max_iter: 最大迭代次数
+    % 返回值：
+    % x: 解向量
+    % iter: 实际迭代次数
+    % error: 最终误差
+    
+    % 输入检查
+    if nargin < 4
+        error('需要四个输入参数：A, b, tol, max_iter');
+    end
+    
+    [m, n] = size(A);
+    if m ~= n || length(b) ~= n
+        error('A必须是方阵，且A和b的维度必须匹配');
+    end
+    
+    % 初始化
+    x = zeros(n, 1);  % 初始解向量
+    x_old = x;        % 前一次迭代的解向量
+    inv_diag = 1 ./ diag(A);  % 预先计算对角线元素的倒数
+    
+    for iter = 1:max_iter
+        for i = 1:n
+            % 计算当前行的新的 x 值
+            sum1 = A(i, 1:i-1) * x(1:i-1);
+            sum2 = A(i, i+1:n) * x_old(i+1:n);
+            x(i) = (b(i) - sum1 - sum2) * inv_diag(i);
+        end
+        
+        % 检查收敛性
+        error = norm(x - x_old, inf);
+        if error < tol
+            fprintf('迭代收敛于第 %d 次迭代。\n', iter);
+            return;
+        end
+        
+        % 更新旧的解向量
+        x_old = x;
+    end
+    
+    warning('达到最大迭代次数 %d，未收敛。最终误差: %e', max_iter, error);
+end
 
 
 
